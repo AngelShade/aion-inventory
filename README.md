@@ -1,5 +1,7 @@
 # Aion 4.8 Server Emulator - Inventory and Warehouse Expansion
 
+##Based and works on https://github.com/beyond-aion/aion-server
+
 ## Download or clone
 
 Repository: [AngelShade/aion-inventory](https://github.com/AngelShade/aion-inventory).
