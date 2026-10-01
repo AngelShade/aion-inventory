@@ -1,4 +1,4 @@
-# Inventory and Warehouse Expansion — Aion 4.8 NA
+# Aion 4.8 Server Emulator - Inventory and Warehouse Expansion
 
 ## Download or clone
 
