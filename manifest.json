@@ -1,5 +1,5 @@
 {
-  "name": "Unified Inventory for Aion 4.8 NA (64-bit)",
+  "name": "Inventory and Warehouse Expansion for Aion 4.8 NA (64-bit)",
   "baseSlots": 180,
   "maxSlots": 279,
   "columns": 12,
@@ -16,7 +16,22 @@
     "game-server/src/com/aionemu/gameserver/network/aion/serverpackets/SM_INVENTORY_INFO.java",
     "game-server/src/com/aionemu/gameserver/services/CubeExpandService.java",
     "game-server/src/com/aionemu/gameserver/services/player/PlayerEnterWorldService.java",
+    "game-server/src/com/aionemu/gameserver/services/player/PlayerService.java",
+    "game-server/src/com/aionemu/gameserver/services/AccountService.java",
+    "game-server/src/com/aionemu/gameserver/services/WarehouseService.java"
+  ],
+  "referenceCommit": "a2454d8c6cc29801952037aca3d78742ce298ca2",
+  "inventoryServerFiles": [
+    "game-server/src/com/aionemu/gameserver/configs/main/CustomConfig.java",
+    "game-server/src/com/aionemu/gameserver/model/gameobjects/player/Player.java",
+    "game-server/src/com/aionemu/gameserver/model/templates/item/actions/ExpandInventoryAction.java",
+    "game-server/src/com/aionemu/gameserver/network/aion/serverpackets/SM_CUBE_UPDATE.java",
+    "game-server/src/com/aionemu/gameserver/network/aion/serverpackets/SM_INVENTORY_INFO.java",
+    "game-server/src/com/aionemu/gameserver/services/CubeExpandService.java",
+    "game-server/src/com/aionemu/gameserver/services/player/PlayerEnterWorldService.java",
     "game-server/src/com/aionemu/gameserver/services/player/PlayerService.java"
   ],
-  "referenceCommit": "a2454d8c6cc29801952037aca3d78742ce298ca2"
+  "characterWarehouseSlots": 360,
+  "accountWarehouseSlots": 540,
+  "inventoryWarehouseDllSha256": "3a60729e01ea8d6d44e9797fd41a2134a2cee4c07f96b9d9564d2ba8611e6967"
 }

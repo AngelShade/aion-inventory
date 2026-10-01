@@ -1,4 +1,4 @@
-"""Install or restore only the unified inventory. No third-party Python modules."""
+"""Install or restore unified inventory and expanded warehouses. No third-party Python modules."""
 import argparse
 import copy
 import hashlib
@@ -19,11 +19,14 @@ import zipfile
 from codec import read_pak, binary_xml, encode_pak, encode_binary_xml
 from unified_inventory import patch_inventory_dll, patch_layout
 from inventory_search import patch_search_dll
+from warehouse_patch import patch_dll as patch_warehouse_dll, patch_archive as patch_warehouse_archive
+from warehouse_search import patch_search_dll as patch_warehouse_search_dll
 
 KIT = Path(__file__).resolve().parents[1]
 SPEC = json.loads((KIT / 'manifest.json').read_text(encoding='utf-8'))
 CLIENT_FILES = ['bin64/game.dll', 'Data/ui/game/game.pak', 'L10N/enu/data/data.pak']
 SOURCE_FILES = SPEC['serverFiles']
+INVENTORY_SOURCE_FILES = SPEC['inventoryServerFiles']
 CONFIG = 'game-server/config/main/custom.properties'
 
 
@@ -152,18 +155,20 @@ def prepare_client(root):
     digest = sha(dll)
     if digest == SPEC['originalDllSha256']:
         dll = patch_search_dll(patch_inventory_dll(dll))
-    elif digest != SPEC['inventoryDllSha256']:
-        raise ValueError('Game.dll is not the supported clean 4.8 NA build or this inventory-only build. '
+    elif digest not in (SPEC['inventoryDllSha256'], SPEC['inventoryWarehouseDllSha256']):
+        raise ValueError('Game.dll is not the supported clean 4.8 NA, inventory-only or inventory/warehouse build. '
                          'Do not use your friend\'s modified Game.dll. Start with a clean matching client.')
-    if sha(dll) != SPEC['inventoryDllSha256']:
-        raise ValueError('Inventory DLL verification failed.')
+    if sha(dll) == SPEC['inventoryDllSha256']:
+        dll = patch_warehouse_search_dll(patch_warehouse_dll(dll))
+    if sha(dll) != SPEC['inventoryWarehouseDllSha256']:
+        raise ValueError('Inventory and warehouse DLL verification failed.')
     for p in CLIENT_FILES:
         if rooted(root, p + '.sig').exists():
             raise ValueError('A custom signature exists for ' + p + '. This installer supports the standard unsigned inventory files.')
     patched = {
         CLIENT_FILES[0]: dll,
-        CLIENT_FILES[1]: patch_archive(original[CLIENT_FILES[1]], ''),
-        CLIENT_FILES[2]: patch_archive(original[CLIENT_FILES[2]], 'ui/game/'),
+        CLIENT_FILES[1]: patch_warehouse_archive(patch_archive(original[CLIENT_FILES[1]], ''), ''),
+        CLIENT_FILES[2]: patch_warehouse_archive(patch_archive(original[CLIENT_FILES[2]], 'ui/game/'), 'ui/game/'),
     }
     return original, patched
 
@@ -215,14 +220,15 @@ def install_client(root):
         for name, data in original.items():
             atomic_write(rooted(root, name), data)
         raise
-    print('Installed and verified three inventory files. Backup:\n' + str(backup))
+    print('Installed and verified three inventory and warehouse files. Backup:\n' + str(backup))
     print('Use the 64-bit client after installing and restarting the matching GameServer.')
 
 
 def update_config(data):
     text = data.decode('utf-8-sig')
     newline = '\r\n' if '\r\n' in text else '\n'
-    for key, value in [('gameserver.inventory.unified', 'true'), ('gameserver.cube.expansion_limit', '11')]:
+    for key, value in [('gameserver.inventory.unified', 'true'), ('gameserver.cube.expansion_limit', '11'),
+                       ('gameserver.warehouse.expanded', 'true')]:
         pattern = r'(?m)^[ \t]*' + re.escape(key) + r'[ \t]*=[^\r\n]*'
         matches = list(re.finditer(pattern, text))
         if len(matches) > 1:
@@ -250,7 +256,7 @@ def git_apply(root, patch, check=False, reverse=False):
 
 def apply_server(root):
     require_install_root(root, 'server')
-    patch = KIT / 'server' / 'inventory-only.patch'
+    patches = [KIT / 'server' / name for name in ('inventory-only.patch', 'warehouse-expansion.patch')]
     before = {p: rooted(root, p).read_bytes() for p in SOURCE_FILES + [CONFIG]}
     # Obtain the exact resulting files in an isolated source fixture before touching the real source.
     with tempfile.TemporaryDirectory(prefix='inventory-server-') as temporary:
@@ -260,14 +266,19 @@ def apply_server(root):
             target.parent.mkdir(parents=True, exist_ok=True)
             # Git's repository line-ending conversion is absent in this isolated folder.
             target.write_bytes(data.replace(b'\r\n', b'\n') if p in SOURCE_FILES else data)
-        checked = git_apply(fixture, patch, check=True)
-        already_applied = False
-        if checked.returncode:
-            already_applied = git_apply(fixture, patch, check=True, reverse=True).returncode == 0
-            if not already_applied:
+        # Remove recognized changes in reverse order, then reapply both patches.
+        # Their shared CustomConfig/Player contexts overlap, so checking the old
+        # inventory patch directly against a fully expanded source is insufficient.
+        for patch in reversed(patches):
+            if git_apply(fixture, patch, check=True, reverse=True).returncode == 0:
+                reversed_patch = git_apply(fixture, patch, reverse=True)
+                if reversed_patch.returncode:
+                    raise ValueError('Source patch validation failed: ' + reversed_patch.stderr)
+        for patch in patches:
+            checked = git_apply(fixture, patch, check=True)
+            if checked.returncode:
                 raise ValueError('The source differs from the supported server version. No files changed.\n'
                                  'Use the manual patch instructions in README.md.\n' + checked.stderr)
-        if not already_applied:
             applied = git_apply(fixture, patch)
             if applied.returncode:
                 raise ValueError('Source patch validation failed: ' + applied.stderr)
@@ -277,7 +288,7 @@ def apply_server(root):
                 after[p] = after[p].replace(b'\n', b'\r\n')
         after[CONFIG] = update_config(before[CONFIG])
     if before == after:
-        print('The inventory source patch and settings are already installed.')
+        print('The inventory and warehouse source patches and settings are already installed.')
         return
     for name, data in before.items():
         if rooted(root, name).read_bytes() != data:
@@ -290,7 +301,7 @@ def apply_server(root):
         for name, data in before.items():
             atomic_write(rooted(root, name), data)
         raise
-    print('Applied eight inventory source changes and two inventory settings. Backup:\n' + str(backup))
+    print('Applied inventory and warehouse changes to ten source files and three settings. Backup:\n' + str(backup))
     print('Build your GameServer, then stop it before replacing its JAR and updating its active config. See README.md.')
 
 
@@ -301,6 +312,8 @@ def restore(backup, expected_kind):
     root = Path(record['root']).resolve()
     expected = set(CLIENT_FILES if expected_kind == 'client' else SOURCE_FILES + [CONFIG])
     entries = record['files']
+    if expected_kind == 'server' and {e['path'] for e in entries} == set(INVENTORY_SOURCE_FILES + [CONFIG]):
+        expected = set(INVENTORY_SOURCE_FILES + [CONFIG])
     if len(entries) != len(expected) or {e['path'] for e in entries} != expected:
         raise ValueError('Unexpected backup file list.')
     if expected_kind == 'client':
@@ -349,7 +362,7 @@ def main():
                 destination = rooted(output, name)
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 destination.write_bytes(data)
-            print('Prepared three verified inventory files. Client unchanged:\n' + str(output))
+            print('Prepared three verified inventory and warehouse files. Client unchanged:\n' + str(output))
     elif args.action == 'apply-server':
         apply_server(ask_path(args.path, SERVER_GUIDANCE + '\n\nEnter the full server SOURCE folder path:'))
     else:

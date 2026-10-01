@@ -46,3 +46,31 @@ PASS: CLI checks against the extracted package and game-server module report
 
 Only installation guidance and path checks changed in this update. The earlier
 gameplay verification above was not rerun; live in-game checks remain required.
+
+Combined Inventory and Warehouse package verification - 2026-10-01
+
+PASS: five source-package tests cover fresh installation, upgrade from the
+      inventory-only patch, repeat installation, byte-exact restoration,
+      legacy backups, BOM/CRLF preservation, unrelated configuration values,
+      and refusal of conflicting source or duplicate warehouse properties.
+PASS: the matching clean reference source with both patches builds successfully
+      using Maven -pl game-server -am package, assembly and tests skipped.
+PASS: all five destination-guidance tests pass with the expanded source list.
+PASS: actual combined DLL native fixtures verify inventory search, scrolling,
+      nine-row viewport/scaling, and safe item-effect loop bounds.
+PASS: actual combined DLL warehouse fixtures verify independent Search/Clear,
+      final-slot matches in 360/540 slots, short/null vectors, original handling
+      of other buttons, and exact native initialization bounds.
+PASS: both rebuilt archives change exactly inventory_dialog.xml,
+      inventory_dialog_new.xml and warehouse_dialog.xml; unrelated contents,
+      entry metadata and archive entry order are retained.
+PASS: the earlier inventory-only client upgrades to identical combined files;
+      repeating the combined archive/DLL patch is byte-idempotent.
+PASS: isolated client install/repeat verifies three files, and restore returns
+      the exact original DLL and archives.
+
+No live client, running server or database was changed by these checks. The
+client-close guard was overridden only for the isolated copy installation test.
+Warehouse rendering, transfers and high-slot persistence after relog, including
+Account Warehouse access from another character, require README.md's in-game
+checks on the recipient's matching client and server.
