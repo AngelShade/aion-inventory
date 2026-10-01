@@ -28,6 +28,9 @@ Run `Install-Client.cmd` or `Apply-Server.cmd` from the downloaded/cloned folder
 
 This package expands Inventory and the standard Character/Account Warehouse. It does not add Transmog, Broker, Central Market menus, Cash Shop, marketplace pages, gameplay rates or account changes.
 
+<img width="662" height="755" alt="image" src="https://github.com/user-attachments/assets/5358e6e8-3192-47e2-9bfd-4f95d3caf2ce" />
+<img width="632" height="563" alt="image" src="https://github.com/user-attachments/assets/243a1ea3-8052-4acc-8738-f7d7ac42b420" />
+
 ## Before starting
 
 **Players:** once your server operator has enabled the enlarged inventory and warehouses, follow **Step 3 only**. You need Python 3.10+ and the matching client. Git, Java, Maven and the server source are for the server operator.
