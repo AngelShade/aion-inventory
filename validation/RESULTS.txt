@@ -74,3 +74,24 @@ client-close guard was overridden only for the isolated copy installation test.
 Warehouse rendering, transfers and high-slot persistence after relog, including
 Account Warehouse access from another character, require README.md's in-game
 checks on the recipient's matching client and server.
+
+Independent Inventory beside Warehouse and Profile - 2026-10-01
+
+PASS: the installed detached_inventory.py fix is included in the installer.
+      The combined DLL changes only 67 bytes for its checked native hooks and
+      owner list. Server patches and archive layouts are unchanged by this fix.
+PASS: the native detached-inventory fixture verifies the same normal Inventory
+      is shown, show/hide flags and caller registers are preserved, repeated
+      opening retains its rectangle, null widgets are handled, Warehouse close
+      skips only the Inventory close block, and other docking owners remain.
+PASS: all inventory Search/Clear, scroll, viewport and effect-loop fixtures,
+      and the warehouse Search/Clear and 360/540-bound fixture pass on this DLL.
+PASS: clean clients, the earlier inventory-only build, and the previous combined
+      warehouse build produce the same new DLL; repeating installation is
+      byte-idempotent. Isolated install/repeat and byte-exact restore pass.
+PASS: all five installation-destination checks pass. Python source syntax and
+      shipped file checksums are verified.
+
+The opening hook tests use controlled native widget fixtures. This publication
+does not run the live client. Recipients should check Warehouse/Profile opening,
+independent dragging/resizing and closing behavior using README.md Step 4.

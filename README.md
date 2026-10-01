@@ -21,6 +21,7 @@ Run `Install-Client.cmd` or `Apply-Server.cmd` from the downloaded/cloned folder
 - An inventory **Search** field, **Clear** button and match count. Search dims other items and scrolls to the first match. Clear restores the previous scroll position.
 - **360 Character Warehouse slots** and **540 Account Warehouse slots**, with 12-column scrollable lists and separate Search/Clear controls.
 - Previously earned warehouse expansion credits remain saved. With expanded warehouses enabled, all 360/540 slots are available and the expansion button is hidden. Legion Warehouse retains its normal capacity.
+- Warehouse and Profile (**P**) open the same full Inventory used by **I**. Inventory stays independently movable and resizable; closing Warehouse or Profile leaves it open. Reopening either preserves Inventory's position and current state.
 - Item movement, sorting, tooltips and item use keep the game's normal behavior. Item positions are saved by the server.
 
 This package expands Inventory and the standard Character/Account Warehouse. It does not add Transmog, Broker, Central Market menus, Cash Shop, marketplace pages, gameplay rates or account changes.
@@ -174,6 +175,8 @@ If the installer refuses an unsupported **Game.dll**, use a clean matching clien
 
 Use this updated package and run the same `Apply-Server.cmd` and `Install-Client.cmd`. The server installer recognizes the earlier inventory patch and adds the warehouse patch; the client accepts the exact earlier inventory-only DLL and upgrades it to the combined build. Rebuild and deploy the server JAR, enable all three active properties, and restart normally. Repeating the combined installation is supported. Older client and server backups can still be restored if their files have not changed since that installation.
 
+If you already installed the combined Inventory/Warehouse package, fully close Aion and rerun **Install-Client.cmd** from this update. It accepts the previous combined DLL and adds independent Inventory behavior beside Warehouse and Profile. This client fix requires no further server changes. Use the new backup printed by this installation to undo it; earlier backups require restoring updates in reverse order.
+
 ## Step 4 — Check it in game
 
 1. Open Inventory. It should show 12 columns, 9 visible rows, Search and Clear, with no Next arrow.
@@ -182,6 +185,7 @@ Use this updated package and run the same `Apply-Server.cmd` and `Install-Client
 4. Use an eligible expansion ticket or claim an inventory expansion quest reward. Capacity should increase by 9 immediately. Slots above your unlocked capacity stay locked.
 5. Open the standard Warehouse. Verify Character and Account lists have 12 columns, scroll to their final rows, and search/clear independently. Sorting, Kinah display/transfers, tooltips and Legion Warehouse should behave normally.
 6. Move an item into a high Character slot and a high Account slot. Close/reopen and relog. Check the same Account Warehouse from a second character. Items should keep their saved positions.
+7. Open Warehouse and then Profile (**P**). Both should show the full Inventory used by **I**, with its grid and Search/Clear. Move and resize Inventory independently, close Warehouse/Profile, and confirm Inventory stays open. Reopen the dialogs and check that Inventory keeps its position, size, search and scroll state.
 
 The native code checks and isolated installation tests are recorded in `validation/RESULTS.txt`. Your own client and server still need this in-game check.
 

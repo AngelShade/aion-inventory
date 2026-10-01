@@ -55,8 +55,13 @@ SERVER OPERATORS - SOURCE PATCH, THEN BUILD AND DEPLOY
 
 Includes 180 base slots, expansion rewards up to 279 slots, and inventory search.
 Also includes 360 Character Warehouse and 540 Account Warehouse slots.
+Warehouse and Profile (P) open the same full Inventory as I, independently
+movable and resizable. Closing Warehouse or Profile leaves Inventory open.
 Only inventory/warehouse changes are included; no other menus, shops or gameplay settings.
 The same installers upgrade the previous inventory-only package.
+Already using the combined package? Fully close Aion and rerun Install-Client.cmd
+from this update. This independent-inventory fix needs no further server changes.
+To undo it, use the NEW backup printed by this installation.
 
 This package contains a SOURCE PATCH, not a prebuilt server JAR.
 Apply-Server.cmd alone does not complete the server installation.

@@ -21,6 +21,7 @@ from unified_inventory import patch_inventory_dll, patch_layout
 from inventory_search import patch_search_dll
 from warehouse_patch import patch_dll as patch_warehouse_dll, patch_archive as patch_warehouse_archive
 from warehouse_search import patch_search_dll as patch_warehouse_search_dll
+from detached_inventory import patch_detached_inventory
 
 KIT = Path(__file__).resolve().parents[1]
 SPEC = json.loads((KIT / 'manifest.json').read_text(encoding='utf-8'))
@@ -155,12 +156,14 @@ def prepare_client(root):
     digest = sha(dll)
     if digest == SPEC['originalDllSha256']:
         dll = patch_search_dll(patch_inventory_dll(dll))
-    elif digest not in (SPEC['inventoryDllSha256'], SPEC['inventoryWarehouseDllSha256']):
+    elif digest not in (SPEC['inventoryDllSha256'], SPEC['inventoryWarehouseDllSha256'],
+                        SPEC['inventoryWarehouseDetachedDllSha256']):
         raise ValueError('Game.dll is not the supported clean 4.8 NA, inventory-only or inventory/warehouse build. '
                          'Do not use your friend\'s modified Game.dll. Start with a clean matching client.')
     if sha(dll) == SPEC['inventoryDllSha256']:
         dll = patch_warehouse_search_dll(patch_warehouse_dll(dll))
-    if sha(dll) != SPEC['inventoryWarehouseDllSha256']:
+    dll = patch_detached_inventory(dll)
+    if sha(dll) != SPEC['inventoryWarehouseDetachedDllSha256']:
         raise ValueError('Inventory and warehouse DLL verification failed.')
     for p in CLIENT_FILES:
         if rooted(root, p + '.sig').exists():
