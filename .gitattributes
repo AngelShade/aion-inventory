@@ -1,0 +1,4 @@
+# Keep package checksums identical after Git downloads and clones.
+* -text
+# Unified diffs need their leading context spaces.
+*.patch -whitespace

@@ -1,0 +1,48 @@
+Inventory-only sharing package verification - 2026-09-30
+
+PASS: server patch applies to the matching reference source; eight Java files
+      plus only the unified-inventory and expansion-limit settings change.
+PASS: all eight Java source changes compile with JDK 25 against the pre-inventory
+      GameServer JAR and its existing dependencies.
+PASS: server capacity fixture checks 180 base slots, nine-slot quest/ticket
+      rewards, saved credits, ticket levels, 279 maximum, login/update packet
+      agreement, and the original capacity when unified inventory is disabled.
+PASS: applying the server patch again does not change already patched source.
+PASS: source restoration recovers all nine original files byte for byte.
+PASS: settings preserve unrelated values, UTF-8 BOM and CRLF line endings;
+      duplicate inventory settings are refused.
+PASS: Windows CRLF Java source applies and restores byte for byte; conflicting
+      source is refused before any source or configuration file is changed.
+PASS: installer prepares only three client files from the verified original DLL.
+PASS: the rebuilt archives change only the two inventory XML entries each;
+      every other entry retains identical contents and original archive order.
+PASS: Search/Clear keys, absence of Next, grid size and repeat layout patching.
+PASS: original menu execution, browser authentication and preview docking code
+      and unrelated native hook caves remain identical to the original DLL.
+PASS: native fixtures cover nine visible rows, UI scaling, scrollbar range,
+      retained scroll during item movement, effect-loop bounds, search matching,
+      counts, Clear, dimming and original handling for other widgets/dialogs.
+PASS: client-close guard refuses a running client (controlled process fixture).
+PASS: isolated installation hash-verifies three client files, and restoration
+      returns the fixture to its exact original bytes.
+PASS: an unsupported DLL is refused without changing archive files.
+PASS: the sharing folder is excluded by the repository's .gitignore.
+
+These tests use isolated file copies and native/server fixtures. They do not
+connect to a live database or change the running server or installed client.
+The recipient must perform the in-game checks in README.md on their client
+and server. Rendering and live item persistence on that machine are not proven
+by the isolated tests.
+
+Installation destination guidance verification - 2026-10-01
+
+PASS: five isolated destination tests in tools/tests/verify_install_paths.py:
+      blank input is refused; paths with spaces/quotes are accepted; valid
+      client/source roots are recognized; client subfolders, the game-server
+      module (even with its own pom.xml), deployment folders, the package
+      folder and incomplete roots are refused before installation writes.
+PASS: CLI checks against the extracted package and game-server module report
+      missing files and the correct root-folder guidance, without changes.
+
+Only installation guidance and path checks changed in this update. The earlier
+gameplay verification above was not rerun; live in-game checks remain required.

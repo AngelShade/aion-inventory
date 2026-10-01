@@ -1,0 +1,61 @@
+UNIFIED INVENTORY - AION 4.8 NA (64-bit)
+
+Extract the entire package first. Run the .cmd files from the extracted folder.
+You do NOT need to copy this package into the game or server folder.
+The installers ask you to paste a FULL FOLDER PATH and press Enter.
+To copy a path: open the folder in File Explorer, press Ctrl+L, then Ctrl+C.
+Example paths below are not defaults. Use your own folders.
+
+PLAYERS - CLIENT INSTALLATION ONLY
+Your server operator must enable the enlarged inventory on the server first.
+1. Install Python 3.10+ if needed, and fully close Aion.
+2. Run Install-Client.cmd.
+3. Enter the Aion GAME ROOT: the folder containing bin64, Data and L10N.
+
+   Example:
+   D:\Games\Aion 4.8 NA\          <-- ENTER THIS FOLDER
+     bin64\game.dll
+     Data\ui\game\game.pak
+     L10N\enu\data\data.pak
+
+   Enter: D:\Games\Aion 4.8 NA
+   Do NOT enter bin64, Data, L10N, the launcher folder, or Inventory-Only.
+4. Wait for "Installed and verified three inventory files".
+5. Launch the matching English 4.8 NA 64-bit client, reconnect, and press I.
+   Check the 12-column grid, scrolling, Search/Clear and saved item positions.
+Every player using the enlarged inventory needs this client installation.
+Players do not need Apply-Server.cmd, Git, Java or Maven.
+
+SERVER OPERATORS - SOURCE PATCH, THEN BUILD AND DEPLOY
+1. Install Python 3.10+, Git and your normal Java/Maven build tools.
+2. Run Apply-Server.cmd.
+3. Enter the TOP-LEVEL SERVER SOURCE folder, containing pom.xml and game-server.
+
+   Example:
+   D:\Servers\AionSource\        <-- ENTER THIS FOLDER
+     pom.xml
+     game-server\src\
+     game-server\config\main\custom.properties
+
+   Enter: D:\Servers\AionSource
+   Do NOT enter game-server, src, target, the deployed server, or Inventory-Only.
+4. Follow README.md Step 2 to build your own JAR. Wait for BUILD SUCCESS.
+5. Have players log out, then shut down GameServer normally.
+6. Deploy the built JAR and set both inventory properties in the ACTIVE server.
+   Example active folder: D:\Servers\Live\game-server
+   Replace: D:\Servers\Live\game-server\libs\game-server-4.8-SNAPSHOT.jar
+   Edit:    D:\Servers\Live\game-server\config\main\custom.properties
+   Set:
+     gameserver.inventory.unified = true
+     gameserver.cube.expansion_limit = 11
+   These active files may be in a different folder from your server source.
+7. Start GameServer, then follow the player/client steps above.
+
+Includes 180 base slots, expansion rewards up to 279 slots, and inventory search.
+Only inventory changes are included. No other menus, shops or gameplay settings.
+
+This package contains a SOURCE PATCH, not a prebuilt server JAR.
+Apply-Server.cmd alone does not complete the server installation.
+If an installer reports ERROR, read its message and correct the folder/version.
+Wrong folders, unsupported clients and source conflicts are refused.
+Read README.md for full build, installation, verification and restore steps.
