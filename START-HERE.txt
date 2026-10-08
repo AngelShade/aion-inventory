@@ -1,3 +1,8 @@
+CUMULATIVE MODULE INSTALLATION
+Use Install-Module.ps1 to install this module alone or add it to the other published modules.
+See README.md and the individual installation guide.
+
+OLDER ISOLATED INSTALLATION INSTRUCTIONS
 INVENTORY AND WAREHOUSE EXPANSION - AION 4.8 NA (64-bit)
 
 Extract the entire package first. Run the .cmd files from the extracted folder.
